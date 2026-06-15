@@ -1,15 +1,15 @@
-# Context Forge — Writeup
+# Context Forge - Writeup
 
 ## Goal
 
 Quantify the cost/quality tradeoff of context-compression strategies on a fixed,
 real-data task set, and report the **Pareto frontier** over three axes that a real
 deployment cares about: **tokens saved**, **quality retained**, and **compression
-latency** — per production tokenizer.
+latency** - per production tokenizer.
 
 ![Pareto overview](figures/overview.png)
 
-## Data (real, public — no synthetic examples)
+## Data (real, public - no synthetic examples)
 
 | Task | Dataset | Split |
 |---|---|---|
@@ -30,10 +30,10 @@ unified backend that dispatches to **tiktoken** or **Hugging Face**:
 
 ## Compression strategies
 
-- `hard_prompt_pruning` — deterministic head/tail token-budget truncation.
-- `embedding_chunk_drop` — TF-IDF cosine chunk relevance dropping, anchored on the task query/target.
-- `kv_cache_eviction` — text-level proxy for cache eviction: prefix + recent suffix + salient middle chunks.
-- `llmlingua` — optional wrapper of open-source LLMLingua-2 (installed via the `[llmlingua]` extra).
+- `hard_prompt_pruning` - deterministic head/tail token-budget truncation.
+- `embedding_chunk_drop` - TF-IDF cosine chunk relevance dropping, anchored on the task query/target.
+- `kv_cache_eviction` - text-level proxy for cache eviction: prefix + recent suffix + salient middle chunks.
+- `llmlingua` - optional wrapper of open-source LLMLingua-2 (installed via the `[llmlingua]` extra).
 
 ## Evaluation
 
@@ -41,7 +41,7 @@ Latency is measured directly (median wall-clock per compression call). Token sav
 computed per tokenizer. **Quality retained** is a task-specific *preservation* score in
 [0, 1]: answer-span/token recall for QA, reference-summary keyword coverage for
 summarization, and final/tail-trace coverage for agent traces. It is a
-compression-preservation proxy, **not** a model-graded answer score — the benchmark is
+compression-preservation proxy, **not** a model-graded answer score - the benchmark is
 designed to run end-to-end with no paid inference. The code is structured so an LLM judge
 can be added later without changing the static report format.
 
@@ -61,7 +61,7 @@ Averaged across all tasks, tokenizers, and ratios (`1,620` measurements):
 ![Strategy comparison](figures/strategy_comparison.png)
 
 Relevance-aware strategies retain ~92% of task signal at ~51% fewer tokens. Naive head/tail
-truncation is an order of magnitude faster but collapses to 71% quality on average — and to
+truncation is an order of magnitude faster but collapses to 71% quality on average - and to
 0.0 on RAG QA at high compression, because it discards the answer span outright.
 
 ## Token droppability classifier

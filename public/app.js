@@ -60,9 +60,9 @@ function bindStats() {
   $("#s-models").textContent = (d.models || []).length;
   $("#s-strats").textContent = strats.size;
   $("#s-tasks").textContent = (d.tasks || []).length;
-  $("#s-examples").textContent = d.n_examples ?? "—";
+  $("#s-examples").textContent = d.n_examples ?? "-";
   $("#s-records").textContent = (d.n_records ?? 0).toLocaleString();
-  $("#f-run").textContent = d.run_id || "—";
+  $("#f-run").textContent = d.run_id || "-";
   $("#f-date").textContent = (d.created_at || "").replace("T", " ").replace("Z", " UTC");
 }
 
@@ -189,7 +189,7 @@ function drawChart(points) {
   ctx.fillText("Quality retained", 0, 0);
   ctx.restore();
 
-  // frontier connector — only meaningful within a single (task, tokenizer) slice
+  // frontier connector - only meaningful within a single (task, tokenizer) slice
   const singleSlice = state.task !== "all" && state.model !== "all";
   const frontier = singleSlice
     ? points.filter((p) => p.on_frontier).sort((a, b) => a.tokens_saved_pct - b.tokens_saved_pct)
@@ -284,7 +284,7 @@ function onMove(e) {
 const STRAT_DESC = {
   hard_prompt_pruning: "Deterministic head/tail token-budget truncation. Near-zero latency baseline.",
   embedding_chunk_drop: "Drops least-relevant chunks by TF-IDF cosine similarity to the query.",
-  kv_cache_eviction: "Keeps prefix + recent suffix + salient middle — a text proxy for cache eviction.",
+  kv_cache_eviction: "Keeps prefix + recent suffix + salient middle - a text proxy for cache eviction.",
   llmlingua: "Wraps Microsoft LLMLingua-2 learned token compression (optional dependency)."
 };
 
@@ -368,9 +368,9 @@ function renderClassifier() {
       <h3>What it learned</h3>
       <div class="sub">Most confidently <span style="color:var(--accent-2)">droppable</span> vs. <span style="color:var(--good)">keep</span> tokens on held-out data.</div>
       <div style="font-size:12px;color:var(--faint);margin-bottom:4px">Droppable</div>
-      <div class="chips">${drop.map((t) => `<span class="chip drop">${escapeHtml(t)}</span>`).join("") || "—"}</div>
+      <div class="chips">${drop.map((t) => `<span class="chip drop">${escapeHtml(t)}</span>`).join("") || "-"}</div>
       <div style="font-size:12px;color:var(--faint);margin:14px 0 4px">Keep</div>
-      <div class="chips">${keep.map((t) => `<span class="chip keep">${escapeHtml(t)}</span>`).join("") || "—"}</div>
+      <div class="chips">${keep.map((t) => `<span class="chip keep">${escapeHtml(t)}</span>`).join("") || "-"}</div>
     </div>`;
 }
 

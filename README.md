@@ -4,7 +4,7 @@
 
 ### Spend fewer tokens. Keep the answer.
 
-**An open, reproducible benchmark for prompt/context compression** — it reports the
+**An open, reproducible benchmark for prompt/context compression** - it reports the
 **Pareto frontier** of *tokens saved* vs. *quality retained* vs. *latency* across the
 tokenizers production apps actually pay for, on **real public data**.
 
@@ -23,13 +23,13 @@ tokenizers production apps actually pay for, on **real public data**.
 ## Why this exists
 
 Every token you send to an LLM costs money and latency, and long contexts blow up
-quadratically. **Context compression** trims the prompt before inference — but the
+quadratically. **Context compression** trims the prompt before inference - but the
 question that matters is the *tradeoff*: how much can you cut before the answer breaks,
 and what does it cost you in compute?
 
 Context Forge answers that question with **hard numbers**. It runs a fixed task set
 through several compression strategies and multiple tokenizers, then plots the
-**Pareto frontier** — the set of configurations where you can't get more savings
+**Pareto frontier** - the set of configurations where you can't get more savings
 without losing quality (or paying more latency). Nothing is hard-coded; the static
 report renders whatever the last benchmark run produced.
 
@@ -50,7 +50,7 @@ From the bundled run (`1,620` measurements · `36` examples · `3` tokenizers ·
 
 **Takeaway:** relevance-aware strategies (chunk drop / cache-eviction proxy) retain
 **~92% of task signal at ~51% fewer tokens**, while naive head/tail truncation collapses
-to **71%** — because it routinely cuts the very span that answers the question. For RAG QA
+to **71%** - because it routinely cuts the very span that answers the question. For RAG QA
 specifically, truncation drops quality to **0.0** at high compression (the answer span is
 gone), whereas chunk-relevance dropping keeps it at **1.0**.
 
@@ -72,7 +72,7 @@ gone), whereas chunk-relevance dropping keeps it at **1.0**.
 | Agent traces | `lambda/hermes-agent-reasoning-traces` | tail-trace / outcome coverage |
 | Long-context summarization | GovReport | reference-keyword coverage |
 
-**Three production tokenizers** — token savings are counted with the tokenizer a real
+**Three production tokenizers** - token savings are counted with the tokenizer a real
 deployment pays for, not a stand-in:
 
 | Model | Backend | Encoding |
@@ -81,16 +81,16 @@ deployment pays for, not a stand-in:
 | `gpt-4` | tiktoken | `cl100k_base` (GPT-4 / GPT-3.5-turbo / `text-embedding-3`) |
 | `gpt-2` | Hugging Face | BPE reference baseline |
 
-Adding `gpt-4`/`gpt-4o` was the point of the multi-backend rewrite — the original
+Adding `gpt-4`/`gpt-4o` was the point of the multi-backend rewrite - the original
 benchmark only counted GPT-2 tokens. Any tiktoken encoding or HF repo id also works
 (see [`tokenizers.py`](src/compress_bench/tokenizers.py)).
 
 **Four strategies:**
 
-- `hard_prompt_pruning` — deterministic head/tail token-budget truncation (near-zero latency baseline).
-- `embedding_chunk_drop` — TF-IDF/cosine chunk relevance dropping against the task query.
-- `kv_cache_eviction` — keeps prompt prefix + recent suffix + salient middle (a text-level proxy for cache eviction).
-- `llmlingua` — optional wrapper around Microsoft **LLMLingua-2** (extra dependency; downloads a model).
+- `hard_prompt_pruning` - deterministic head/tail token-budget truncation (near-zero latency baseline).
+- `embedding_chunk_drop` - TF-IDF/cosine chunk relevance dropping against the task query.
+- `kv_cache_eviction` - keeps prompt prefix + recent suffix + salient middle (a text-level proxy for cache eviction).
+- `llmlingua` - optional wrapper around Microsoft **LLMLingua-2** (extra dependency; downloads a model).
 
 ---
 
@@ -106,7 +106,7 @@ From the bundled run (1.6M labeled tokens, `gpt-4o` tokenizer):
 |---:|---:|---:|---:|
 | **0.964** | 0.917 | 88.1% | 0.98 / 0.86 |
 
-It learns intuitive signal — morphological fragments and inflections
+It learns intuitive signal - morphological fragments and inflections
 (`-ating`, `-ated`, `-ative`, `izer`) are droppable, while salient content nouns
 (`healthcare`, `claims`, `agency`, `relationships`) are kept.
 
@@ -162,7 +162,7 @@ src/compress_bench/
 public/             # frameworkless static dashboard (HTML/CSS/vanilla JS canvas)
 └── results/        # latest_results.json + classifier_report.json (what the site renders)
 
-data/manifest.yml   # dataset ids, splits, tokenizers, ratios — the single source of truth
+data/manifest.yml   # dataset ids, splits, tokenizers, ratios - the single source of truth
 docs/writeup.md     # short methodology writeup
 ```
 
@@ -170,7 +170,7 @@ docs/writeup.md     # short methodology writeup
 
 ## Methodology notes
 
-- **Pareto frontier** — within each `(task, tokenizer)` slice, a configuration is kept
+- **Pareto frontier** - within each `(task, tokenizer)` slice, a configuration is kept
   if no other configuration beats it on *all three* axes (≥ tokens saved, ≥ quality,
   ≤ latency). The dashboard rings frontier points and connects them.
 - **Quality retained is a preservation proxy**, not a model-graded answer score
@@ -178,7 +178,7 @@ docs/writeup.md     # short methodology writeup
   coverage for agents). This is deliberate: the benchmark runs end-to-end with **no paid
   inference**. The code is structured so an LLM judge can be slotted in without changing
   the report format. See [`docs/writeup.md`](docs/writeup.md).
-- **Reproducibility** — every dataset id, split, tokenizer, and ratio lives in
+- **Reproducibility** - every dataset id, split, tokenizer, and ratio lives in
   `data/manifest.yml`. The deployed site contains no baked-in numbers; it renders the
   generated artifact.
 
@@ -205,4 +205,4 @@ docs/writeup.md     # short methodology writeup
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
