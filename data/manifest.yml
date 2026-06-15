@@ -1,0 +1,32 @@
+datasets:
+  rag_qa:
+    loader: squad
+    source: rajpurkar/squad
+    split: validation
+    task: grounded extractive QA
+    license_note: SQuAD is a public Stanford Question Answering Dataset release.
+  long_context_summarization:
+    loader: gov_report
+    source: launch/gov_report
+    split: test
+    task: long document summarization
+    license_note: GovReport contains U.S. government reports with expert summaries.
+  agent_traces:
+    loader: hermes_agent_traces
+    source: lambda/hermes-agent-reasoning-traces
+    config: kimi
+    split: train
+    task: agent trajectory compression
+    license_note: Public Hugging Face agent-trace dataset; check upstream card before redistribution.
+models:
+  - id: gpt2
+    family: decoder
+  - id: distilbert-base-uncased
+    family: encoder
+  - id: google/flan-t5-small
+    family: encoder-decoder
+compression_ratios:
+  - 0.35
+  - 0.5
+  - 0.65
+  - 0.8

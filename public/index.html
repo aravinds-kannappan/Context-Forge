@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Context Forge</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>Context Forge</h1>
+        <p>Real-data compression benchmark for QA, agent traces, and long-context summarization.</p>
+      </div>
+      <a class="button" href="https://github.com/aravinds-kannappan/Context-Forge" aria-label="Open source repository">Source</a>
+    </header>
+
+    <main>
+      <section class="summary" id="summary">
+        <div class="metric">
+          <span class="label">Run</span>
+          <strong id="run-id">loading</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Records</span>
+          <strong id="records">-</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Examples</span>
+          <strong id="examples">-</strong>
+        </div>
+        <div class="metric">
+          <span class="label">Frontier Points</span>
+          <strong id="points">-</strong>
+        </div>
+      </section>
+
+      <section class="controls">
+        <label>
+          Task
+          <select id="task-filter"></select>
+        </label>
+        <label>
+          Model
+          <select id="model-filter"></select>
+        </label>
+      </section>
+
+      <section class="chart-wrap">
+        <canvas id="pareto" width="1100" height="620"></canvas>
+      </section>
+
+      <section class="table-section">
+        <h2>Pareto Frontier</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Model</th>
+                <th>Strategy</th>
+                <th>Ratio</th>
+                <th>Saved</th>
+                <th>Quality</th>
+                <th>Latency</th>
+                <th>N</th>
+              </tr>
+            </thead>
+            <tbody id="frontier-table"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "context-forge"
+version = "0.1.0"
+description = "Real-data benchmark for prompt/context compression strategies across QA, agent traces, and long-context summarization."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Aravind Kannappan"}]
+dependencies = [
+  "datasets>=2.19",
+  "huggingface-hub>=0.23",
+  "matplotlib>=3.8",
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "pyyaml>=6.0",
+  "regex>=2024.5.15",
+  "scikit-learn>=1.4",
+  "tiktoken>=0.7",
+  "tqdm>=4.66",
+  "transformers>=4.43",
+]
+
+[project.optional-dependencies]
+llmlingua = ["llmlingua>=0.2.2"]
+embeddings = ["sentence-transformers>=3.0"]
+dev = ["pytest>=8.2", "ruff>=0.5"]
+
+[project.scripts]
+compress-bench = "compress_bench.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"

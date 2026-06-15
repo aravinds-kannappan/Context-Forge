@@ -1,0 +1,14 @@
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.vercel/
+data/cache/
+data/raw/
+data/results/*.jsonl
+data/results/*.pkl
+public/results/*.tmp
+work/
