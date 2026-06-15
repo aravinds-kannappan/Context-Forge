@@ -7,7 +7,7 @@ datasets:
     license_note: SQuAD is a public Stanford Question Answering Dataset release.
   long_context_summarization:
     loader: gov_report
-    source: launch/gov_report
+    source: ccdv/govreport-summarization
     split: test
     task: long document summarization
     license_note: GovReport contains U.S. government reports with expert summaries.

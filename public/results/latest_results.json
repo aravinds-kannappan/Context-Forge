@@ -1,0 +1,138 @@
+{
+  "run_id": "20260615-030410",
+  "created_at": "2026-06-15T10:04:23Z",
+  "manifest_path": "data/manifest.yml",
+  "n_records": 18,
+  "n_examples": 3,
+  "models": [
+    "gpt2"
+  ],
+  "tasks": [
+    "rag_qa",
+    "agent_traces",
+    "long_context_summarization"
+  ],
+  "ratios": [
+    0.5,
+    0.8
+  ],
+  "strategies_requested": [
+    "hard_prompt_pruning",
+    "embedding_chunk_drop",
+    "kv_cache_eviction"
+  ],
+  "errors": [],
+  "records_path": "data/results/records.jsonl",
+  "pareto": [
+    {
+      "task": "agent_traces",
+      "model": "gpt2",
+      "strategy": "hard_prompt_pruning",
+      "ratio": 0.5,
+      "tokens_saved_pct": 50.00420415370386,
+      "quality_retained": 1.0,
+      "latency_ms": 11.966624999999453,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "hard_prompt_pruning",
+      "ratio": 0.5,
+      "tokens_saved_pct": 50.004304037186884,
+      "quality_retained": 0.9399393203883495,
+      "latency_ms": 14.857124999998916,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "embedding_chunk_drop",
+      "ratio": 0.5,
+      "tokens_saved_pct": 48.558147542394764,
+      "quality_retained": 0.9609344660194175,
+      "latency_ms": 39.68129100000084,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "kv_cache_eviction",
+      "ratio": 0.5,
+      "tokens_saved_pct": 48.420418352414565,
+      "quality_retained": 0.9498543689320388,
+      "latency_ms": 38.17675000000165,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "hard_prompt_pruning",
+      "ratio": 0.8,
+      "tokens_saved_pct": 20.005164844624257,
+      "quality_retained": 0.9556796116504853,
+      "latency_ms": 15.128416999999672,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "embedding_chunk_drop",
+      "ratio": 0.8,
+      "tokens_saved_pct": 17.431350606869245,
+      "quality_retained": 0.9655946601941747,
+      "latency_ms": 39.16479099999748,
+      "n_examples": 1
+    },
+    {
+      "task": "long_context_summarization",
+      "model": "gpt2",
+      "strategy": "kv_cache_eviction",
+      "ratio": 0.8,
+      "tokens_saved_pct": 17.42274253249548,
+      "quality_retained": 0.9655946601941747,
+      "latency_ms": 38.150916999999396,
+      "n_examples": 1
+    },
+    {
+      "task": "rag_qa",
+      "model": "gpt2",
+      "strategy": "embedding_chunk_drop",
+      "ratio": 0.5,
+      "tokens_saved_pct": 52.406417112299465,
+      "quality_retained": 1.0,
+      "latency_ms": 3.618917000000721,
+      "n_examples": 1
+    },
+    {
+      "task": "rag_qa",
+      "model": "gpt2",
+      "strategy": "hard_prompt_pruning",
+      "ratio": 0.5,
+      "tokens_saved_pct": 50.26737967914438,
+      "quality_retained": 0.0,
+      "latency_ms": 0.3677499999987788,
+      "n_examples": 1
+    },
+    {
+      "task": "rag_qa",
+      "model": "gpt2",
+      "strategy": "hard_prompt_pruning",
+      "ratio": 0.8,
+      "tokens_saved_pct": 20.32085561497326,
+      "quality_retained": 0.0,
+      "latency_ms": 0.2693330000003158,
+      "n_examples": 1
+    },
+    {
+      "task": "rag_qa",
+      "model": "gpt2",
+      "strategy": "embedding_chunk_drop",
+      "ratio": 0.8,
+      "tokens_saved_pct": 19.25133689839572,
+      "quality_retained": 1.0,
+      "latency_ms": 1.6992919999996303,
+      "n_examples": 1
+    }
+  ]
+}
