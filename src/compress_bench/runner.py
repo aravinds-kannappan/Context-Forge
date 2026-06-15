@@ -4,7 +4,7 @@ import json
 import os
 import time
 from collections import defaultdict
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Iterable, List
 
@@ -15,7 +15,7 @@ from .data import load_task_examples, read_manifest
 from .quality import exact_target_retained, quality_retained
 from .schemas import EvalRecord, ParetoPoint
 from .strategies import strategy_by_name
-from .tokenizers import token_count
+from .tokenizers import model_families, token_count
 
 
 def run_benchmark(
@@ -88,7 +88,8 @@ def run_benchmark(
         for record in records:
             handle.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
 
-    pareto = aggregate_pareto(records)
+    aggregates = aggregate_points(records)
+    frontier = [p for p in aggregates if p.on_frontier]
     summary = {
         "run_id": run_id,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -96,25 +97,30 @@ def run_benchmark(
         "n_records": len(records),
         "n_examples": len(examples),
         "models": list(models),
+        "model_families": model_families(models),
         "tasks": list(tasks),
         "ratios": list(ratios),
         "strategies_requested": list(strategies),
         "errors": errors[:50],
         "records_path": str(raw_path),
-        "pareto": [asdict(point) for point in pareto],
+        "aggregates": [asdict(point) for point in aggregates],
+        "pareto": [asdict(point) for point in frontier],
+        "by_strategy": rollup_by_strategy(records),
     }
     latest_path = out / "latest_results.json"
     latest_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     return summary
 
 
-def aggregate_pareto(records: List[EvalRecord]) -> List[ParetoPoint]:
+def aggregate_points(records: List[EvalRecord]) -> List[ParetoPoint]:
+    """Aggregate raw records into mean (task, model, strategy, ratio) points and
+    flag which ones lie on the Pareto frontier of their (task, model) slice."""
     grouped = defaultdict(list)
     for record in records:
         key = (record.task, record.model, record.strategy, record.ratio)
         grouped[key].append(record)
 
-    candidates = []
+    candidates: List[ParetoPoint] = []
     for (task, model, strategy, ratio), rows in grouped.items():
         candidates.append(
             ParetoPoint(
@@ -129,7 +135,7 @@ def aggregate_pareto(records: List[EvalRecord]) -> List[ParetoPoint]:
             )
         )
 
-    frontier = []
+    flagged: List[ParetoPoint] = []
     for point in candidates:
         dominated = False
         for other in candidates:
@@ -149,9 +155,30 @@ def aggregate_pareto(records: List[EvalRecord]) -> List[ParetoPoint]:
             if better_or_equal and strictly_better:
                 dominated = True
                 break
-        if not dominated:
-            frontier.append(point)
-    return sorted(frontier, key=lambda p: (p.task, p.model, -p.tokens_saved_pct))
+        flagged.append(replace(point, on_frontier=not dominated))
+    return sorted(flagged, key=lambda p: (p.task, p.model, -p.tokens_saved_pct))
+
+
+def rollup_by_strategy(records: List[EvalRecord]) -> List[dict]:
+    """Overall mean metrics per strategy, across all tasks/models/ratios."""
+    grouped = defaultdict(list)
+    for record in records:
+        grouped[record.strategy].append(record)
+    rows = []
+    for strategy, items in grouped.items():
+        rows.append(
+            {
+                "strategy": strategy,
+                "tokens_saved_pct": float(pd.Series([r.tokens_saved_pct for r in items]).mean()),
+                "quality_retained": float(pd.Series([r.quality_retained for r in items]).mean()),
+                "latency_ms": float(pd.Series([r.latency_ms for r in items]).median()),
+                "exact_target_retained": float(
+                    pd.Series([r.exact_target_retained or 0.0 for r in items]).mean()
+                ),
+                "n": len(items),
+            }
+        )
+    return sorted(rows, key=lambda r: -r["quality_retained"])
 
 
 def copy_latest_to_public(out_dir: str, public_dir: str = "public/results") -> None:

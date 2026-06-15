@@ -19,13 +19,17 @@ datasets:
     task: agent trajectory compression
     license_note: Public Hugging Face agent-trace dataset; check upstream card before redistribution.
 models:
-  - id: gpt2
-    family: decoder
-  - id: distilbert-base-uncased
-    family: encoder
-  - id: google/flan-t5-small
-    family: encoder-decoder
+  - id: gpt-4o
+    family: openai-o200k
+    note: tiktoken o200k_base — GPT-4o / GPT-4.1 production tokenizer.
+  - id: gpt-4
+    family: openai-cl100k
+    note: tiktoken cl100k_base — GPT-4 / GPT-3.5-turbo / text-embedding-3.
+  - id: gpt-2
+    family: bpe
+    note: Hugging Face gpt2 BPE — legacy reference baseline.
 compression_ratios:
+  - 0.25
   - 0.35
   - 0.5
   - 0.65

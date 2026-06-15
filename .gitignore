@@ -14,3 +14,4 @@ data/results/*.json
 data/results/*.pkl
 public/results/*.tmp
 work/
+outputs/

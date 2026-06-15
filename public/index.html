@@ -3,74 +3,212 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Context Forge</title>
+    <title>Context Forge — Token Compression Benchmark</title>
+    <meta
+      name="description"
+      content="An open benchmark for prompt/context compression: the Pareto frontier of tokens saved vs. quality retained vs. latency across production tokenizers (GPT-4o, GPT-4, GPT-2), on real RAG QA, agent-trace, and long-context summarization data."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div>
-        <h1>Context Forge</h1>
-        <p>Real-data compression benchmark for QA, agent traces, and long-context summarization.</p>
+    <nav class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#top">
+          <span class="spark">◆</span>
+          Context&nbsp;Forge
+        </a>
+        <div class="nav-links">
+          <a href="#findings">Findings</a>
+          <a href="#frontier">Pareto frontier</a>
+          <a href="#strategies">Strategies</a>
+          <a href="#classifier">Classifier</a>
+          <a href="#method">Method</a>
+          <a class="btn" href="https://github.com/aravinds-kannappan/Context-Forge" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
       </div>
-      <a class="button" href="https://github.com/aravinds-kannappan/Context-Forge" aria-label="Open source repository">Source</a>
+    </nav>
+
+    <header id="top" class="wrap hero">
+      <span class="eyebrow">◆ Open compression benchmark</span>
+      <h1>Spend fewer tokens. Keep the answer.</h1>
+      <p class="lead">
+        Context Forge quantifies the cost/quality tradeoff of context-compression strategies on
+        <strong>real public data</strong> — RAG QA, agent traces, and long-context summarization — and reports the
+        <strong>Pareto frontier</strong> of tokens saved vs. quality retained vs. latency for the tokenizers production apps
+        actually pay for: GPT-4o (o200k), GPT-4/3.5 (cl100k), and GPT-2. Every number is generated from a reproducible run;
+        nothing is hard-coded.
+      </p>
+      <div class="cta-row">
+        <a class="cta primary" href="#frontier">Explore the frontier ↓</a>
+        <a class="cta ghost" href="https://github.com/aravinds-kannappan/Context-Forge" target="_blank" rel="noopener">Read the code</a>
+      </div>
+
+      <div class="stats" id="stats">
+        <div class="stat"><div class="num" id="s-models">—</div><div class="cap">Tokenizers</div></div>
+        <div class="stat"><div class="num" id="s-strats">—</div><div class="cap">Strategies</div></div>
+        <div class="stat"><div class="num" id="s-tasks">—</div><div class="cap">Task families</div></div>
+        <div class="stat"><div class="num" id="s-examples">—</div><div class="cap">Examples</div></div>
+        <div class="stat"><div class="num" id="s-records">—</div><div class="cap">Measurements</div></div>
+      </div>
     </header>
 
-    <main>
-      <section class="summary" id="summary">
-        <div class="metric">
-          <span class="label">Run</span>
-          <strong id="run-id">loading</strong>
+    <main class="wrap">
+      <!-- FINDINGS -->
+      <section class="block" id="findings">
+        <div class="sec-head">
+          <div>
+            <h2>Headline findings</h2>
+            <p>The best strategy on the frontier for each task family, picked for the strongest quality at ≥40% tokens saved.</p>
+          </div>
         </div>
-        <div class="metric">
-          <span class="label">Records</span>
-          <strong id="records">-</strong>
+        <div class="findings" id="findings-cards"></div>
+      </section>
+
+      <!-- FRONTIER -->
+      <section class="block" id="frontier">
+        <div class="sec-head">
+          <div>
+            <h2>The Pareto frontier</h2>
+            <p>Each point is a (strategy × ratio) configuration. Up and to the right is better: more tokens saved, more quality retained. Bubble size encodes compression latency. Ringed points are Pareto-optimal — nothing beats them on all three axes.</p>
+          </div>
         </div>
-        <div class="metric">
-          <span class="label">Examples</span>
-          <strong id="examples">-</strong>
+
+        <div class="controls panel">
+          <div class="field">
+            <label>Task</label>
+            <div class="seg" id="task-seg"></div>
+          </div>
+          <div class="field">
+            <label>Tokenizer</label>
+            <div class="seg" id="model-seg"></div>
+          </div>
         </div>
-        <div class="metric">
-          <span class="label">Frontier Points</span>
-          <strong id="points">-</strong>
+
+        <div class="panel chart-card">
+          <div class="chart-head">
+            <div class="legend" id="legend"></div>
+            <div class="legend"><span class="item">◯ ringed = on Pareto frontier</span></div>
+          </div>
+          <div class="chart-canvas-wrap">
+            <canvas id="pareto" width="1120" height="600"></canvas>
+            <div class="tooltip" id="tooltip"></div>
+          </div>
+          <p class="note">Quality is a task-specific retention score (answer-span recall for QA, reference-keyword coverage for summarization, tail-trace coverage for agents) — a compression-preservation proxy, not a model-graded answer score. See Method.</p>
         </div>
       </section>
 
-      <section class="controls">
-        <label>
-          Task
-          <select id="task-filter"></select>
-        </label>
-        <label>
-          Model
-          <select id="model-filter"></select>
-        </label>
+      <!-- STRATEGIES -->
+      <section class="block" id="strategies">
+        <div class="sec-head">
+          <div>
+            <h2>Strategy scorecard</h2>
+            <p>Averaged across every task, tokenizer, and ratio in the run. Latency is the median per-call compression time.</p>
+          </div>
+        </div>
+        <div class="strat-grid" id="strat-grid"></div>
       </section>
 
-      <section class="chart-wrap">
-        <canvas id="pareto" width="1100" height="620"></canvas>
+      <!-- FRONTIER TABLE -->
+      <section class="block">
+        <div class="sec-head">
+          <div>
+            <h2>All configurations</h2>
+            <p>Mean metrics for the current task/tokenizer filter. Highlighted rows are on the Pareto frontier.</p>
+          </div>
+        </div>
+        <div class="panel table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Tokenizer</th>
+                  <th>Strategy</th>
+                  <th class="num">Ratio</th>
+                  <th class="num">Tokens saved</th>
+                  <th class="num">Quality</th>
+                  <th class="num">Latency</th>
+                  <th class="num">N</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="frontier-table"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
-      <section class="table-section">
-        <h2>Pareto Frontier</h2>
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Model</th>
-                <th>Strategy</th>
-                <th>Ratio</th>
-                <th>Saved</th>
-                <th>Quality</th>
-                <th>Latency</th>
-                <th>N</th>
-              </tr>
-            </thead>
-            <tbody id="frontier-table"></tbody>
-          </table>
+      <!-- CLASSIFIER -->
+      <section class="block" id="classifier">
+        <div class="sec-head">
+          <div>
+            <h2>Learned token-droppability classifier</h2>
+            <p>A small logistic-regression model that predicts, per token, whether it can be dropped — the seed of a learned compressor. Trained on weak labels from target overlap, with character n-gram + positional features.</p>
+          </div>
+        </div>
+        <div class="clf-grid" id="clf-grid"></div>
+      </section>
+
+      <!-- METHOD -->
+      <section class="block" id="method">
+        <div class="sec-head">
+          <div>
+            <h2>Method &amp; reproducibility</h2>
+            <p>No synthetic data, no baked-in numbers. The static site renders whatever the last run wrote to <code>public/results/</code>.</p>
+          </div>
+        </div>
+        <div class="method-grid">
+          <div class="panel method">
+            <h3>Data (real, public)</h3>
+            <ul>
+              <li><b>RAG QA</b> — SQuAD validation: question + context + gold answer span.</li>
+              <li><b>Agent traces</b> — <code>hermes-agent-reasoning-traces</code>: multi-turn tool-use trajectories.</li>
+              <li><b>Long-context summarization</b> — GovReport: long US gov. reports + expert summaries.</li>
+            </ul>
+          </div>
+          <div class="panel method">
+            <h3>Strategies</h3>
+            <ul>
+              <li><b>hard_prompt_pruning</b> — head/tail token-budget truncation.</li>
+              <li><b>embedding_chunk_drop</b> — TF-IDF/cosine chunk relevance dropping vs. the query.</li>
+              <li><b>kv_cache_eviction</b> — prefix + recent-suffix + salient-middle proxy.</li>
+              <li><b>llmlingua</b> — optional wrap of Microsoft LLMLingua-2 (extra dep).</li>
+            </ul>
+          </div>
+          <div class="panel method">
+            <h3>Metrics</h3>
+            <ul>
+              <li><b>Tokens saved</b> — measured per tokenizer (tiktoken / HF).</li>
+              <li><b>Quality retained</b> — task-specific retention proxy in [0,1].</li>
+              <li><b>Latency</b> — median wall-clock per compression call.</li>
+              <li><b>Frontier</b> — non-dominated points per (task, tokenizer).</li>
+            </ul>
+          </div>
+          <div class="panel method">
+            <h3>Reproduce</h3>
+            <ul>
+              <li><code>pip install -e .</code></li>
+              <li><code>compress-bench run --limit-per-task 12</code></li>
+              <li><code>compress-bench train-classifier</code></li>
+              <li><code>compress-bench plots</code></li>
+            </ul>
+          </div>
         </div>
       </section>
     </main>
+
+    <footer>
+      <div class="wrap">
+        Context Forge — run <code id="f-run">—</code>, generated <span id="f-date">—</span>.
+        MIT licensed · <a href="https://github.com/aravinds-kannappan/Context-Forge" target="_blank" rel="noopener">source on GitHub</a>.
+      </div>
+    </footer>
 
     <script src="/app.js" type="module"></script>
   </body>

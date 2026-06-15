@@ -49,6 +49,7 @@ class ParetoPoint:
     quality_retained: float
     latency_ms: float
     n_examples: int
+    on_frontier: bool = False
 
 
 def dataclass_list_to_dicts(items: List[object]) -> List[dict]:
